@@ -1,0 +1,22 @@
+package com.fresco.tenderManagement.repository;
+
+import com.fresco.tenderManagement.model.BiddingModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import javax.transaction.Transactional;
+import java.util.List;
+
+@Repository
+public interface BiddingRepository extends JpaRepository<BiddingModel, Integer> {
+    List<BiddingModel> findByBidAmountGreaterThan(double bidAmount);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM bidding_model WHERE id = :id AND (bidder_id = :userId OR :isApprover = true)", nativeQuery = true)
+    int deleteBiddingByIdAndUserAccess(@Param("id") int id, @Param("userId") int userId, @Param("isApprover") boolean isApprover);
+
+}
